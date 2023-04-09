@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+	  <PublishReadyToRun>true</PublishReadyToRun>
+	  <PublishTrimmed>true</PublishTrimmed>
+	  <PublishSingleFile>true</PublishSingleFile>
+	  <PublishDir>$(OutputPath)publish\</PublishDir>
+	  <PublishReadyToRunWithSymbols>true</PublishReadyToRunWithSymbols>
+	  <IncludeSymbolsInSingleFile>true</IncludeSymbolsInSingleFile>
+	  <UseAppHost>true</UseAppHost>
+	  <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  </PropertyGroup>
+
+</Project>
