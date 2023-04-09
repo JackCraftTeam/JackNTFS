@@ -226,13 +226,14 @@ namespace JackNTFS
 
                 }
 
+                }
             }
-        }
+            Console.WriteLine($"选择的盘符信息 {SelectedDrive.RootDirectory}");
 
         static void PrintFileSystemInfo(FileSystemInfo fileSystemInfo, int level)
-        {
+            {
             string prefix = new string('\t', level);
-            
+
             // 打印文件或文件夹名称和完整路径
             //Console.WriteLine($"{prefix}{fileSystemInfo.Name} ({fileSystemInfo.FullName})");
             AllFilesList.Add(fileSystemInfo);
@@ -249,9 +250,9 @@ namespace JackNTFS
                 } catch (UnauthorizedAccessException unauthExcep)
                 {
                     Console.WriteLine($"{fileSystemInfo.FullName} - 权限不足");
-                }
-
             }
+
         }
     }
+}
 }
