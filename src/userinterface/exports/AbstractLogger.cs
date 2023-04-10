@@ -1,7 +1,7 @@
 namespace JackNTFS
 {
-  /* 日志记录器
-     将由 “日志记录管理器” 执行最终解释权 */
+  /* 日志记录器接口
+     将由 “日志记录器” 执行最终解释权 */
   internal abstract class AbstractLogger
   {
     /* 日志格式 : string

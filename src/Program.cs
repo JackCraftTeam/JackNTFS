@@ -7,7 +7,7 @@ namespace JackNTFS
     internal class Program
     {
         private static List<FileSystemInfo> allFilesList = new List<FileSystemInfo>();
-        private static LoggerManager logMgr = new LoggerManager();
+        private static Logger logMgr = new Logger();
 
         public static void Main(string[] args)
         {
