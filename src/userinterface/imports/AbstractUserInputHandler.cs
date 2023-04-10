@@ -2,33 +2,34 @@ namespace JackNTFS
 {
     internal abstract class AbstractUserInputHandler
     {
+        /* 回答限制 */
+        protected readonly Operation oper;
+        /* Expectation */
+        protected readonly string expect;
         /* 输入流来源 */
         protected readonly Stream mImportStream;
         /* 输出流来源 */
         protected readonly Stream mExportStream;
 
-        protected enum Operation
+        public enum Operation
         {
-            /* 按格式回答 */
-            RESTRICTED = 0,
-            /* 按二元回答 */
-            BOOLEAN_STYLE,
             /* 按单键回答 */
-            KEY,
+            KEY = 0,
             /* 按任意回答 */
-            EVERYTHING
+            BOOLEAN_STYLE
         }
 
-        public AbstractUserInputHandler(Stream mImportStream, Stream mExportStream)
+        public AbstractUserInputHandler(Operation oper, String expect, Stream mImportStream, Stream mExportStream)
         {
+            this.oper = oper;
+            this.expect = expect;
             this.mImportStream = mImportStream;
             this.mExportStream = mExportStream;
         }
 
-        protected abstract void handle(Operation oper, Stream sourceStream);
+        protected abstract bool handle(Stream sourceStream);
 
-        /* 不指定 “输入流来源”， 则使用默认输入流 */
-        protected abstract void handle(Operation oper);
+        protected abstract bool handle(Stream sourceStream, String expect);
 
         /* 返回： 该实例的 “输入流来源” */
         public Stream getImportStream()
