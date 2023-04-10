@@ -1,7 +1,7 @@
 namespace JackNTFS
 {
     /* 日志记录管理器 */
-    internal class LoggerManager : Logger
+    internal class LoggerManager : AbstractLogger
     {
         public LoggerManager() {}
 

@@ -2,7 +2,7 @@ namespace JackNTFS
 {
   /* 日志记录器
      将由 “日志记录管理器” 执行最终解释权 */
-  internal abstract class Logger
+  internal abstract class AbstractLogger
   {
     /* 日志格式 : string
        用于格式化日志输出文本
@@ -42,7 +42,7 @@ namespace JackNTFS
         TRACE
     }
 
-    protected Logger() {}
+    protected AbstractLogger() {}
 
     /**
      * 记录日志

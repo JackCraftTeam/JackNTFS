@@ -59,14 +59,14 @@ namespace JackNTFS
                     else
                     {
                         // Console.WriteLine("超出范围(Out of range)");
-                        logMgr.log(Logger.Level.ERROR, "超出范围(Out of range)");
+                        logMgr.log(AbstractLogger.Level.ERROR, "超出范围(Out of range)");
                         Console.Write($"要读取的盘符[请输入上方数字<1-{driveInfoList.Count}>]: ");
                     }
                 }
                 catch (IndexOutOfRangeException outOfRangeExcep)
                 {
                     // Console.WriteLine("超出范围(Out of range)");
-                    logMgr.log(Logger.Level.ERROR, "超出范围(Out of range)");
+                    logMgr.log(AbstractLogger.Level.ERROR, "超出范围(Out of range)");
                     Console.Write($"要读取的盘符[请输入上方数字<1-{driveInfoList.Count}>]: ");
                 }
             }
@@ -87,14 +87,14 @@ namespace JackNTFS
                     else
                     {
                         // Console.WriteLine("超出范围(Out of range)");
-                        logMgr.log(Logger.Level.ERROR, "超出范围(Out of range)");
+                        logMgr.log(AbstractLogger.Level.ERROR, "超出范围(Out of range)");
                         Console.Write($"要进行的操作 [ 1-全盘读取 2-单文件读取]: ");
                     }
                 }
                 catch (IndexOutOfRangeException outOfRangeExcep)
                 {
                     // Console.WriteLine("超出范围(Out of range)");
-                    logMgr.log(Logger.Level.ERROR, "超出范围(Out of range)");
+                    logMgr.log(AbstractLogger.Level.ERROR, "超出范围(Out of range)");
                     Console.Write($"要进行的操作 [ 1-全盘读取 2-单文件读取]: ");
                 }
             }
@@ -244,7 +244,7 @@ namespace JackNTFS
                     }
                 } catch (UnauthorizedAccessException unauthExcep) {
                     // Console.WriteLine($"{fileSystemInfo.FullName} - 权限不足");
-                    logMgr.log(Logger.Level.ERROR, $"{fileSystemInfo.FullName}", "权限不足");
+                    logMgr.log(AbstractLogger.Level.ERROR, $"{fileSystemInfo.FullName}", "权限不足");
                 }
             }
         }
