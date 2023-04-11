@@ -2,7 +2,8 @@
 
 ## 简介
 本项目将在完成后立即用于 [Jack](https://github.com/imJack6) 的服务器修复。  
-若您对此项目感兴趣，请联系 [Jack](https://github.com/imJack6) 或 [William](https://github.com/WilliamPascal) 以获取更多信息。  
+若您对此项目感兴趣，请联系 [Jack](https://github.com/imJack6) 或 [William](https://github.com/WilliamPascal) 以获取更多信息。
+欢迎提交issues，也感谢点亮小星星~😃
 
 ## 功能
 本项目希望能修复 [Jack](https://github.com/imJack6) 服务器中硬盘扇区数据偏移问题[^0]。  
