@@ -1,16 +1,13 @@
 using log4net;
 using log4net.Config;
 using ShellProgressBar;
-using System;
-using System.Drawing;
-using System.IO;
-using System.Text;
-using System.Xml.Linq;
 
 namespace JackNTFS
 {
     internal class Program
     {
+        private Program() {}
+
         private static List<FileSystemInfo> allFilesList = new List<FileSystemInfo>();  //所有文件与文件夹
         private static List<FileSystemInfo> allDirList = new List<FileSystemInfo>();    //所有文件夹
         private static List<FileSystemInfo> allFileList = new List<FileSystemInfo>();   //所有文件
@@ -472,7 +469,10 @@ namespace JackNTFS
         private static string outOfRangeExpression(long userInput, long left, long right, bool isLeftIncluded, bool isRightIncluded)
         {
             string precontent = "超出范围(Out of range)";
-            return (precontent + $" {userInput} " + (isLeftIncluded ? "[" : "(") + $"{left}, {right}" + (isRightIncluded ? "]" : ")"));
+            return (precontent + $" {userInput} "
+                   + (isLeftIncluded ? "[" : "(")
+                   + $"{left}, {right}"
+                   + (isRightIncluded ? "]" : ")"));
         }
     }
 }
