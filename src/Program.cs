@@ -122,13 +122,12 @@ namespace JackNTFS
             {
                 Console.Write("请输入偏移量（单位：字节）[若无偏移则填写0<一般无偏移的文件均可以正常读取，无需使用本工具>]: ");
                 long offset = 0;
-                bool While_Bool = true;
-                while (While_Bool)
+                while (true)
                 {
                     try
                     {
                         offset = (long)Convert.ToDouble(Console.ReadLine()); //偏移量（字节）
-                        While_Bool = false;
+                        break;
                     }
                     catch (Exception) // FIXME: OutOfRangeException
                     {
