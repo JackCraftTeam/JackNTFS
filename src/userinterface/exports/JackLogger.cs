@@ -13,7 +13,7 @@ namespace JackNTFS.src.userinterface.exports
 {
     internal class JackLogger : ILogger
     {
-        private Process DEFAULT_PROCESS;
+        private readonly Process DEFAULT_PROCESS;
         private StreamReader DEFAULT_STREAM_READER;
         private StreamWriter DEFAULT_STREAM_WRITER;
         private static ILog globalLogger = LogManager.GetLogger(typeof(JackLogger));
@@ -50,7 +50,7 @@ namespace JackNTFS.src.userinterface.exports
 
         public void Log(Type callerStackBoundaryDeclaringType, Level level, object? message, Exception? exception)
         {
-            /* FIXME: callerStackBoundaryDeclaringType : Type is not used */
+            callerStackBoundaryDeclaringType = typeof(JackLogger); // HERE (HOLD ON)
             CombinedLog(level, message, exception);
         }
 
@@ -151,9 +151,9 @@ namespace JackNTFS.src.userinterface.exports
 
         private void CombinedLog(Level? level, object? message, Exception? exception, StreamWriter outputStream)
         {
-            if (level == null) { level = Level.Debug; }
-            if (exception == null) { exception = new Exception(); }
-            if (message == null) { message = ""; }
+            level ??= Level.Debug;
+            exception ??= new Exception();
+            message ??= "";
 
             if (level.Value == Level.Fatal.Value)
             {

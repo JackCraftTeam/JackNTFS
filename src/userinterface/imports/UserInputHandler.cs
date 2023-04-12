@@ -8,18 +8,18 @@ namespace JackNTFS.src.userinterface.imports
         public UserInputHandler(RestrictionStyle restr, string expect, Stream importStream, Stream exportStream)
             : base(restr, expect, importStream, exportStream)
         {
-            this.mUserInput = "";
-            this.mResult = false;
+            mUserInput = "";
+            mResult = false;
         }
 
         public override int Handle()
         {
-            this.mUserInput = new StreamReader(mImportStream).ReadLine();
+            mUserInput = new StreamReader(mImportStream).ReadLine();
 
             if (mUserInput == null)
             {
-                this.mUserInput = "";
-                this.mResult = false;
+                mUserInput = "";
+                mResult = false;
                 return -1;
             }
 
@@ -27,16 +27,16 @@ namespace JackNTFS.src.userinterface.imports
             {
                 /* If mUserInput is more than ONE character, then we only compare the first character
                  * in that string regardless to the difference of length. And same to mExpect */
-                (RestrictionStyle.SINGULARITY) => ((this.mUserInput[0] == base.GetExpect()[0]) ? 0 : 1),
-                (RestrictionStyle.MULTIPARITY) => (String.Compare(this.mUserInput, base.GetExpect())),
+                (RestrictionStyle.SINGULARITY) => ((mUserInput[0] == GetExpect()[0]) ? 0 : 1),
+                (RestrictionStyle.MULTIPARITY) => (string.Compare(mUserInput, GetExpect())),
                 _ => -1,
             };
         }
 
         public string GetLastInput()
-        { return this.mUserInput; }
+        { return mUserInput; }
 
         public bool GetLastResult()
-        { return this.mResult; }
+        { return mResult; }
     }
 }

@@ -35,13 +35,13 @@ namespace JackNTFS.src.environment.examiners
 
         protected Jack(T JackType, bool isJackable)
         {
-            this.mJackType = JackType;
-            this.mIsJackable = isJackable;
+            mJackType = JackType;
+            mIsJackable = isJackable;
         }
 
         public bool IsJackable()
         {
-            return this.mIsJackable;
+            return mIsJackable;
         }
     }
 }

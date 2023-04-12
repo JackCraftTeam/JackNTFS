@@ -36,7 +36,7 @@ namespace JackNTFS
                 Console.WriteLine("  ┣ 当前用户的可用空间:{0, 15} 字节",
                     drive.AvailableFreeSpace);
 
-                if (drive.IsReady == true)
+                if (drive.IsReady)
                 {
                     Console.WriteLine("  ┣ 总可用空间:        {0, 15} 字节",
                         drive.TotalFreeSpace);
@@ -46,9 +46,8 @@ namespace JackNTFS
                 }
             }   //遍历所有盘
 
-/*            Console.Write($"[共{driveInfoList.Count}个盘符] [");
-            log.Info($"[共{driveInfoList.Count}个盘符]");
-*/
+            /* Console.Write($"[共{driveInfoList.Count}个盘符] [");
+            log.Info($"[共{driveInfoList.Count}个盘符]"); */
             jackLogger.Info($"[共{driveInfoList.Count}个盘符]");
             int drive_int = 0;
             foreach (DriveInfo drive in driveInfoList)
