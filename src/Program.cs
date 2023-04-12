@@ -1,6 +1,9 @@
+using JackNTFS.src.userinterface.exports;
 using log4net;
 using log4net.Config;
+using log4net.Core;
 using ShellProgressBar;
+using static log4net.Core.Level;
 
 namespace JackNTFS
 {
@@ -12,7 +15,8 @@ namespace JackNTFS
         private static List<FileSystemInfo> allDirList = new List<FileSystemInfo>();    //所有文件夹
         private static List<FileSystemInfo> allFileList = new List<FileSystemInfo>();   //所有文件
 
-        private static readonly ILog log = LogManager.GetLogger(typeof(Program)); //声明Logger对象
+        private static readonly ILog log = LogManager.GetLogger(typeof(Program));       //声明Logger对象
+        private static readonly JackLogger jackLogger = new JackLogger(log);
 
         //public static void Main(string[] args)
         public static async Task Main(string[] args)
@@ -41,8 +45,11 @@ namespace JackNTFS
                         drive.TotalSize);
                 }
             }   //遍历所有盘
-            Console.Write($"[共{driveInfoList.Count}个盘符] [");
+
+/*            Console.Write($"[共{driveInfoList.Count}个盘符] [");
             log.Info($"[共{driveInfoList.Count}个盘符]");
+*/
+            jackLogger.Info($"[共{driveInfoList.Count}个盘符]");
             int drive_int = 0;
             foreach (DriveInfo drive in driveInfoList)
             {
