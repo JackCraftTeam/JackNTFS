@@ -22,6 +22,8 @@ namespace JackNTFS
         private static List<DriveInfo> driveInfoList = new List<DriveInfo>();           // 所有磁盘信息
         private static DriveInfo[] allDrives = DriveInfo.GetDrives();                   // 所有磁盘
 
+        private static readonly WilliamLogger WLogger = WilliamLogger.GetGlobal();
+
         public static async Task Main(string[] args)
         {
             XmlConfigurator.Configure();
@@ -45,16 +47,22 @@ namespace JackNTFS
                     if (OperateDrive >= 1 && OperateDrive <= driveInfoList.Count)
                     {
                         DriveInfo SelectedDrive = new(driveInfoList[OperateDrive - 1].ToString());
-                        // TEST(William): Ensure contents
-                        new WilliamLogger()
+                        WLogger
                             .Log(WilliamLogger.WPriority.ALL,
                                  WilliamLogger.WPurpose.LOGGING,
                                  new object[] {
                                      $"DriveInfo SelectedDrive = new(driveInfoList[OperateDrive - 1].ToString());\n{SelectedDrive.Name}"
                                  }
                             );
-                        // TEST OVER
-
+                        WLogger.Log(
+                            WilliamLogger.WPriority.MAJOR,
+                            WilliamLogger.WPurpose.TESTING,
+                            new object[]
+                            {
+                                "第一个字符串数据",
+                                "第二个字符串数据\n换行会被重处理"
+                            }
+                        );
                         // 连接下文
                         Console.WriteLine($" ┗ 当前选择的盘符: {SelectedDrive.RootDirectory}");
                         Console.Write($"要进行的操作 [ 1-全盘读取 2-单文件读取]: ");
