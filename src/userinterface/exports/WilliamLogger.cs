@@ -72,6 +72,7 @@ namespace JackNTFS.src.userinterface.exports
             public static readonly string NOTHING = "Nothing";
             public static readonly string LOGGING = "Logging";
             public static readonly string TESTING = "Testing";
+            public static readonly string EXCEPTION = "Exception";
         }
 
         public static readonly string WILLIAM_LOG_DECORATION = ">>> ";

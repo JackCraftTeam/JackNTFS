@@ -47,6 +47,7 @@ namespace JackNTFS
                     if (OperateDrive >= 1 && OperateDrive <= driveInfoList.Count)
                     {
                         DriveInfo SelectedDrive = new(driveInfoList[OperateDrive - 1].ToString());
+                        // TEST(William): Test a bit WilliamLog
                         WLogger
                             .Log(WilliamLogger.WPriority.ALL,
                                  WilliamLogger.WPurpose.LOGGING,
@@ -63,6 +64,8 @@ namespace JackNTFS
                                 "第二个字符串数据\n换行会被重处理"
                             }
                         );
+                        // TEST OVER
+
                         // 连接下文
                         Console.WriteLine($" ┗ 当前选择的盘符: {SelectedDrive.RootDirectory}");
                         Console.Write($"要进行的操作 [ 1-全盘读取 2-单文件读取]: ");
