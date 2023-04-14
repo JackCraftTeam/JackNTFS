@@ -6,6 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using static JackNTFS.src.userinterface.exports.WilliamLogger.WPriority;
+using static JackNTFS.src.userinterface.exports.WilliamLogger.WPurpose;
+
 namespace JackNTFS.src.sectorinterface
 {
     internal abstract class SectorOperator
@@ -78,7 +81,7 @@ namespace JackNTFS.src.sectorinterface
                          WilliamLogger.WPurpose.LOGGING,
                          new object[]
                          {
-                             $"{nameof(WriteBuff)} had a problem with range."
+                             $"{nameof(WriteBuff)} had a problem with range indexing."
                          }
                     );
 

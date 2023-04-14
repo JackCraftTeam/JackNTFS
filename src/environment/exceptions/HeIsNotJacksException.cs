@@ -1,6 +1,7 @@
 ﻿using JackNTFS.src.userinterface.exports;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -11,8 +12,10 @@ using static JackNTFS.src.userinterface.exports.WilliamLogger.WPurpose;
 
 namespace JackNTFS.src.environment.exceptions
 {
+    [Serializable]
     public class HeIsNotJacksException : Exception
     {
+        [NonSerialized]
         private readonly WilliamLogger wLogger;
 
         public HeIsNotJacksException()
@@ -36,6 +39,7 @@ namespace JackNTFS.src.environment.exceptions
 
         protected HeIsNotJacksException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
+            wLogger.Log(wLogger, new object[] { info.ToString(), context.ToString() });
         }
     }
 }
