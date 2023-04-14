@@ -1,14 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+
+using static JackNTFS.src.userinterface.exports.WilliamLogger.WPriority;
+using static JackNTFS.src.userinterface.exports.WilliamLogger.WPurpose;
 
 namespace JackNTFS.src.userinterface.exports
 {
     // William
     internal class WilliamLogger
     {
+        public  readonly static string WILLIAM_LOG_DECORATION = ">>> ";
+        public  readonly static string WILLIAM_SIGN = "William";
+        public  readonly static string WILLIAM_DEAFULT_PURPOSE = "Logging";
+        private readonly static string DEFAULT_LOG_FILE_NAME = "LogDefaultName";
+        private static WilliamLogger globalWilliamLogger
+            = new(WilliamLogger.WPriority.NONE, WilliamLogger.WPurpose.NOTHING);
+
+        private readonly DateTimeFormat LOG_FILE_NAME_DATE_TIME_FORMAT;
+        private readonly DateTime LOG_FILE_NAME_DATE_TIME_VALUE;
+        private readonly string LOG_FILE_NAME;
+        private readonly object[] wPriority;
+        private readonly string wPurpose;
+
         public class WPriority
         {
             public static readonly object[] NONE         = { "NONE",        int.MinValue };
@@ -18,6 +36,7 @@ namespace JackNTFS.src.userinterface.exports
             public static readonly object[] SERIOUS      = { "SERIOUS",     40000        };
             public static readonly object[] DANDEROUS    = { "DANDEROUS",   50000        };
             public static readonly object[] FATAL        = { "FATAL",       60000        };
+            public static readonly object[] DEBUG        = { "DEBUG",       70000        };
             public static readonly object[] ALL          = { "ALL",         int.MaxValue };
 
             private WPriority() { }
@@ -75,19 +94,16 @@ namespace JackNTFS.src.userinterface.exports
             public static readonly string EXCEPTION = "Exception";
         }
 
-        public static readonly string WILLIAM_LOG_DECORATION = ">>> ";
-        public static readonly string WILLIAM_SIGN = "William";
-        public static readonly string WILLIAM_DEAFULT_PURPOSE = "Logging";
-
-        private readonly object[] wPriority;
-        private readonly string wPurpose;
-
-        private static WilliamLogger globalWilliamLogger = new WilliamLogger(WilliamLogger.WPriority.NONE, WilliamLogger.WPurpose.NOTHING);
-
         public WilliamLogger(object[] priority, string wPurpose)
         {
             this.wPriority = priority;
             this.wPurpose = wPurpose;
+
+            this.LOG_FILE_NAME_DATE_TIME_FORMAT = new DateTimeFormat("yyyyMMddHHmmss");
+            this.LOG_FILE_NAME_DATE_TIME_VALUE = DateTime.Now;
+            this.LOG_FILE_NAME = LOG_FILE_NAME_DATE_TIME_FORMAT.ToString();
+
+            LOG_FILE_NAME ??= DEFAULT_LOG_FILE_NAME;
         }
 
         public object[] Priority { get { return wPriority;} }
@@ -101,12 +117,57 @@ namespace JackNTFS.src.userinterface.exports
                 throw new ArgumentNullException(nameof(priority));
             }
 
+            if (string.IsNullOrEmpty(purpose))
+            {
+                throw new ArgumentException($"“{nameof(purpose)}”不能为 null 或空。", nameof(purpose));
+            }
+
             if (msg is null)
             {
                 throw new ArgumentNullException(nameof(msg));
             }
 
             DoLog(CombineToWilliamPrecontent(priority, purpose), msg);
+        }
+
+        public void Log(WilliamLogger logger, object[] msg)
+        {
+            if (logger is null)
+            {
+                throw new ArgumentNullException(nameof(logger));
+            }
+
+            if (msg is null)
+            {
+                throw new ArgumentNullException(nameof(msg));
+            }
+
+            DoLog(CombineToWilliamPrecontent(logger.Priority, logger.Purpose), msg);
+        }
+
+        public void Log(object[] priority, string purpose, object[] msg, Exception innerException)
+        {
+            if (priority is null)
+            {
+                throw new ArgumentNullException(nameof(priority));
+            }
+
+            if (string.IsNullOrEmpty(purpose))
+            {
+                throw new ArgumentException($"“{nameof(purpose)}”不能为 null 或空。", nameof(purpose));
+            }
+
+            if (msg is null)
+            {
+                throw new ArgumentNullException(nameof(msg));
+            }
+
+            if (innerException is null)
+            {
+                throw new ArgumentNullException(nameof(innerException));
+            }
+
+            Log(SERIOUS, EXCEPTION, msg);
         }
 
         /// <summary>
@@ -122,27 +183,45 @@ namespace JackNTFS.src.userinterface.exports
 
             if (targetStr is null)
             {
+                WilliamLogger.GetGlobal()
+                    .Log(DEBUG,
+                         EXCEPTION,
+                         new object[] { $"{nameof(targetStr)} should never be null." });
                 return;
             }
 
             /* Don't forget the first WilliamPreContent~~ */
             Console.Write(WilliamPrecontent);
 
-            for (int i = 0; i < targetStr.Length; i++)
+            try
             {
-                string currStr = targetStr[i].ToString();
-                char currStrChar = char.MaxValue;
-                for (int j = 0; j < currStr.Length; j++)
+                for (int i = 0; i < targetStr.Length; i++)
                 {
-                    currStrChar = currStr[j];
-                    if (currStrChar == '\n')
+                    if (targetStr[i].ToString() == null)
                     {
-                        Console.Write('\n');
-                        Console.Write(WilliamPrecontent);
-                        continue;
+                        throw new ArgumentNullException();
                     }
-                    Console.Write(currStrChar);
+
+                    string currStr = targetStr[i].ToString();
+                    char currStrChar = char.MaxValue;
+                    for (int j = 0; j < currStr.Length; j++)
+                    {
+                        currStrChar = currStr[j];
+                        if (currStrChar == '\n')
+                        {
+                            Console.Write('\n');
+                            Console.Write(WilliamPrecontent);
+                            continue;
+                        }
+                        Console.Write(currStrChar);
+                    }
                 }
+            } catch (ArgumentNullException e)
+            {
+                WilliamLogger.GetGlobal()
+                    .Log(WilliamLogger.WPriority.SERIOUS,
+                         WilliamLogger.WPurpose.EXCEPTION,
+                         new object[] { e.Message });
             }
 
             /* Finish logging by printting a line breaker. */

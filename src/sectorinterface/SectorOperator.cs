@@ -69,7 +69,9 @@ namespace JackNTFS.src.sectorinterface
 
             try
             {
-                /* YOU LEFT HERE */
+                // TEST(William): Not Finished
+                return -1;
+                // TEST OVER
             } catch (IndexOutOfRangeException e) {
                 WilliamLogger.GetGlobal()
                     .Log(WilliamLogger.WPriority.SERIOUS,
