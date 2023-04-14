@@ -8,6 +8,9 @@ using System.Formats.Tar;
 using static log4net.Core.Level;
 using static System.Net.Mime.MediaTypeNames;
 
+using static JackNTFS.src.userinterface.exports.WilliamLogger.WPriority;
+using static JackNTFS.src.userinterface.exports.WilliamLogger.WPurpose;
+
 namespace JackNTFS
 {
     internal class Program
@@ -427,6 +430,14 @@ namespace JackNTFS
                 // Mark1
                 Console.Write($"要读取的盘符[请输入上方数字<1-{driveInfoList.Count}>]: ");
             }
+            catch (ArgumentNullException nullExcep)
+            {
+                WLogger.Log(SERIOUS, EXCEPTION, new object[] { nullExcep.Message });
+            }
+            catch (Exception e)
+            {
+                WLogger.Log(SERIOUS, EXCEPTION, new object[] { e.Message });
+            }
 
             while (true)
             {
@@ -446,6 +457,8 @@ namespace JackNTFS
                         log.Warn(outOfRangeExpression(ActionDrive, 1, 2, true, true));
                         Console.Write($"要进行的操作 [ 1-全盘读取 2-单文件读取]: ");
                     }*/
+
+                    break;
                 }
                 catch (IndexOutOfRangeException outOfRangeExcep)
                 {
@@ -506,6 +519,33 @@ namespace JackNTFS
         {
             foreach (DriveInfo drive in allDrives)
             {
+                try
+                {
+                    driveInfoList.Add(drive);
+                    Console.WriteLine("盘符 {0}", drive.Name);
+                    Console.WriteLine("  ┣ 卷标: {0}", drive.VolumeLabel);
+                    Console.WriteLine("  ┣ 文件系统: {0}", drive.DriveFormat);
+                    Console.WriteLine("  ┣ 当前用户的可用空间:{0, 15} 字节",
+                        drive.AvailableFreeSpace);
+
+                    if (drive.IsReady)
+                    {
+                        Console.WriteLine("  ┣ 总可用空间:        {0, 15} 字节",
+                            drive.TotalFreeSpace);
+
+                        Console.WriteLine("  ┗ 驱动器的总大小:    {0, 15} 字节",
+                            drive.TotalSize);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("无法读取 {0} 盘符信息", drive.Name);
+                }
+
+            }   //遍历所有盘
+/*
+            foreach (DriveInfo drive in allDrives)
+            {
                 driveInfoList.Add(drive);
                 Console.WriteLine("盘符 {0}", drive.Name);
                 Console.WriteLine("  ┣ 卷标: {0}", drive.VolumeLabel);
@@ -521,7 +561,7 @@ namespace JackNTFS
                     Console.WriteLine("  ┗ 驱动器的总大小:    {0, 15} 字节",
                         drive.TotalSize);
                 }
-            }   //遍历所有盘
+            }   //遍历所有盘*/
 
             Console.Write($"[共{driveInfoList.Count}个盘符] [");
             log.Info($"[共{driveInfoList.Count}个盘符]");

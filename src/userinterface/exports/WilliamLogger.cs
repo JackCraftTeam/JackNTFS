@@ -379,40 +379,40 @@ namespace JackNTFS.src.userinterface.exports
                     string currStr = targetStr[i].ToString();
                     char currStrChar = char.MaxValue;
 
-                    byte[] byteCharr = new byte[currStr.Length];
+                    /*byte[] byteCharr = new byte[currStr.Length];
                     int k = 0;
 
                     string charrResult = "";
-                    /* Loop through every char, until we meet a '\n' */
+                    *//* Loop through every char, until we meet a '\n' *//*
                     for (int j = 0; j < currStr.Length; j ++)
                     {
                         currStrChar = currStr[j];
 
                         if (currStrChar == '\n')
                         {
-                            /* Add all collected chars into byteCharr */
+                            *//* Add all collected chars into byteCharr *//*
                             for (; k < j; k ++)
                             {
                                 byteCharr[k] = Convert.ToByte(currStr[k]);
                             }
-                            /* Skip '\n' */
+                            *//* Skip '\n' *//*
                             k ++;
 
-                            /* Apply changes */
+                            *//* Apply changes *//*
                             charrResult += new String(Encoding.UTF8.GetChars((byteCharr)));
 
-                            /* Flush all(used) from byteCharr */
+                            *//* Flush all(used) from byteCharr *//*
                             for (int l = 0; l < k; l ++)
                             {
                                 byteCharr[l] = 0;
                             }
 
-                            /* Reset indexer k */
+                            *//* Reset indexer k *//*
                             k = 0;
                         }
                         else
                             currStrChar = currStr[j];
-                    }
+                    }*/
                     for (int j = 0; j < currStr.Length; j++)
                     {
                         currStrChar = currStr[j];
