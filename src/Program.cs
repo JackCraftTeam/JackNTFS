@@ -5,6 +5,9 @@ using log4net.Core;
 using ShellProgressBar;
 using static log4net.Core.Level;
 
+using static JackNTFS.src.userinterface.exports.WilliamLogger.WPriority;
+using static JackNTFS.src.userinterface.exports.WilliamLogger.WPurpose;
+
 namespace JackNTFS
 {
     internal class Program
@@ -14,108 +17,48 @@ namespace JackNTFS
         private static List<FileSystemInfo> allFilesList = new List<FileSystemInfo>();  // 所有文件与文件夹
         private static List<FileSystemInfo> allDirList = new List<FileSystemInfo>();    // 所有文件夹
         private static List<FileSystemInfo> allFileList = new List<FileSystemInfo>();   // 所有文件
-
+        private static List<DriveInfo> driveInfoList = new List<DriveInfo>();           // 所有盘符信息
         private static readonly ILog log = LogManager.GetLogger(typeof(Program));       // 声明Logger对象
+        private static readonly WilliamLogger exceptionLogger = new(SERIOUS, EXCEPTION);
+        private static readonly WilliamLogger testLogger      = new(DEBUG  , TESTING);
+        private static readonly WilliamLogger williamLogger   = new(NORMAL , LOGGING);
 
         //public static void Main(string[] args)
         public static async Task Main(string[] args)
         {
             XmlConfigurator.Configure();
+
+/*            // TEST(William): WilliamLogger -> Abilities to redirect
+            string TARGET_TEST_FILE_FOR_REDIRECTING = "D:\\Projects\\JackNTFS\\JackNTFS_Test.txt";
+
+            if (!File.Exists(TARGET_TEST_FILE_FOR_REDIRECTING))
+            {
+                File.Create(TARGET_TEST_FILE_FOR_REDIRECTING);
+            }
+            *//* YOU LEFT HERE *//*
+            using (FileStream redirAbility = File.OpenWrite(TARGET_TEST_FILE_FOR_REDIRECTING))
+            {
+                testLogger
+                    .Log(new object[]
+                         {
+                             "Test text for multi-logging ability.\nThe second line.\nThe third line"
+                         }
+                         // FIXME: Create function Log without Execption but have multi-stream fore redirectings
+                         *//*new FileStream[]
+                         {
+                             redirAbility
+                         }*//*);
+            }
+            // TESTOVER: WilliamLogger -> Abilities to redirect
+*/
             Console.WriteLine("欢迎使用 JackNTFS 程序！\n[—————————————————————————————]");
             Console.WriteLine("按任意键以继续");
             Console.ReadLine();
-            List<DriveInfo> driveInfoList = new List<DriveInfo>();
-            DriveInfo[] allDrives = DriveInfo.GetDrives();
-            foreach (DriveInfo drive in allDrives)
-            {
-                driveInfoList.Add(drive);
-                Console.WriteLine("盘符 {0}", drive.Name);
-                Console.WriteLine("  ┣ 卷标: {0}", drive.VolumeLabel);
-                Console.WriteLine("  ┣ 文件系统: {0}", drive.DriveFormat);
-                Console.WriteLine("  ┣ 当前用户的可用空间:{0, 15} 字节",
-                    drive.AvailableFreeSpace);
 
-                if (drive.IsReady)
-                {
-                    Console.WriteLine("  ┣ 总可用空间:        {0, 15} 字节",
-                        drive.TotalFreeSpace);
+            PrintDriveInfo();                                                       //  打印所有盘符信息
+            DriveInfo SelectedDrive = SelectDriveInfo();                            //  选择要操作的盘符
+            int ActionTaken = SelectActionTaken();                                  //  选择进行的操作
 
-                    Console.WriteLine("  ┗ 驱动器的总大小:    {0, 15} 字节",
-                        drive.TotalSize);
-                }
-            }   //遍历所有盘
-
-            Console.Write($"[共{driveInfoList.Count}个盘符] [");
-            log.Info($"[共{driveInfoList.Count}个盘符]");
-            int drive_int = 0;
-            foreach (DriveInfo drive in driveInfoList)
-            {
-                drive_int++;
-                Console.Write($" {drive_int}-{drive.Name} ");
-            }
-            Console.Write("]\n");
-            Console.Write($"要读取的盘符 [请输入上方数字<1-{driveInfoList.Count}>]: ");
-            log.Info($"要读取的盘符 [请输入上方数字<1-{driveInfoList.Count}>]: ");
-            DriveInfo SelectedDrive = null;
-            while (true)
-            {
-                //Console.WriteLine("test");
-                try
-                {
-                    int OperateDrive = Convert.ToInt16(Console.ReadLine());
-                    if (OperateDrive >= 1 && OperateDrive <= driveInfoList.Count)
-                    {
-                        SelectedDrive = driveInfoList[OperateDrive - 1];
-                        //log.Info()
-                        break;
-                    }
-                    else
-                    {
-                        Console.WriteLine("超出范围(Out of range)");
-                        /*log.Warn("超出范围(Out of range): " + OperateDrive + $" [1, {driveInfoList.Count}]");*/
-                        log.Warn(outOfRangeExpression(OperateDrive, 1, driveInfoList.Count, true, true));
-                        /*logMgr.log(AbstractLogger.Level.ERROR, "超出范围(Out of range)");*/
-                        Console.Write($"要读取的盘符[请输入上方数字<1-{driveInfoList.Count}>]: ");
-                        log.Info($"要读取的盘符[请输入上方数字<1-{driveInfoList.Count}>]: ");
-                    }
-                }
-                catch (IndexOutOfRangeException outOfRangeExcep)
-                {
-                    Console.WriteLine("超出范围(Out of range)");
-                    // Mark1
-                    Console.Write($"要读取的盘符[请输入上方数字<1-{driveInfoList.Count}>]: ");
-                }
-            }
-            Console.WriteLine($" ┗ 当前选择的盘符: {SelectedDrive.RootDirectory}");
-            Console.Write($"要进行的操作 [ 1-全盘读取 2-单文件读取]: ");
-            int ActionTaken = 0;
-            while (true)
-            {
-                //Console.WriteLine("test");
-                try
-                {
-                    int ActionDrive = Convert.ToInt16(Console.ReadLine());
-                    if (ActionDrive >= 1 && ActionDrive <= 2)
-                    {
-                        ActionTaken = ActionDrive;
-                        break;
-                    }
-                    else
-                    {
-                        Console.WriteLine("超出范围(Out of range)");
-                        log.Warn("超出范围(Out of range)");
-                        log.Warn(outOfRangeExpression(ActionDrive, 1, 2, true, true));
-                        Console.Write($"要进行的操作 [ 1-全盘读取 2-单文件读取]: ");
-                    }
-                }
-                catch (IndexOutOfRangeException outOfRangeExcep)
-                {
-                    Console.WriteLine("超出范围(Out of range)");
-                    /*logMgr.log(AbstractLogger.Level.ERROR, "超出范围(Out of range)");*/
-                    // Mark 2
-                    Console.Write($"要进行的操作 [ 1-全盘读取 2-单文件读取]: ");
-                }
-            }
             string ActionName = "";
             if (ActionTaken == 1)
                 ActionName = "全盘读取";
@@ -124,36 +67,9 @@ namespace JackNTFS
             Console.WriteLine($" ┗ 进行的操作: {ActionName}");
             if (ActionTaken == 1)
             {
-                Console.Write("请输入偏移量（单位：字节）[若无偏移则填写0<一般无偏移的文件均可以正常读取，无需使用本工具>]: ");
-                long offset = 0;
-                while (true)
-                {
-                    try
-                    {
-                        offset = (long)Convert.ToDouble(Console.ReadLine()); //偏移量（字节）
-                        break;
-                    }
-                    catch (Exception) // FIXME: OutOfRangeException
-                    {
-                        Console.WriteLine("超出范围(Out of range)");
-                        // Mark 3
-                        Console.Write("请输入偏移量（单位：字节）[若无偏移则填写0<一般无偏移的文件均可以正常读取，无需使用本工具>]: ");
-                    }
-                }
+                int offset = EnterOffset();                                         //  输入偏移量
+                string savePath = EnterSavePath(() => { },() => { });               //  输入保存地址
 
-
-                string savePath = "";
-                while (true)
-                {
-                    Console.Write("要保存到的文件夹或盘符: ");
-                    savePath = Console.ReadLine();
-
-                    if (savePath == "" || savePath == null || Object.Equals(savePath, null))
-                    {
-                        Console.WriteLine(" ┗ 请输入路径！");
-                    }
-                    else { break; }
-                }
                 DirectoryInfo directory = new DirectoryInfo(SelectedDrive.Name);
                 PrintFileSystemInfo(directory, 0);
 
@@ -321,7 +237,7 @@ namespace JackNTFS
             }
             else if (ActionTaken == 2)
             {
-                while (true)
+                while (true) // <-- Jack
                 {
                     bool ok1 = false;
                     Console.Write("要读取的文件路径: ");
@@ -342,10 +258,15 @@ namespace JackNTFS
                         try
                         {
                             string path = $"{SelectedDrive.RootDirectory}{rawPath}";   //文件路径
-                            FileStream fs = null;
+                            FileStream fs = null; // 尽量不要初始化为空，除非有存在判定
+                            if (!File.Exists(path))
+                            {
+                                File.Create(path);
+                            }
+                                fs = new FileStream(path, FileMode.Open, FileAccess.Read);
                             try
                             {
-                                fs = new FileStream(path, FileMode.Open, FileAccess.Read);
+                                // HERE
                             }
                             catch (UnauthorizedAccessException unauthExcep)
                             {
@@ -369,55 +290,40 @@ namespace JackNTFS
                                     Console.Write("请输入偏移量（单位：字节）[若无偏移则填写0<一般无偏移的文件均可以正常读取，无需使用本工具>]: ");
                                 }
                             }
-                            int length = (int)fs.Length;  //读取长度（字节）
+/*NullReferenceException:*/ int length = (int)fs.Length;  //读取长度（字节）
                             byte[] buffer = new byte[length];
                             try
                             {
                                 fs.Seek(offset, SeekOrigin.Begin);  //定位到指定的偏移量处
-                                //fs.Read(buffer, 0, length); //从当前位置开始读取指定长度的数据
                                 fs.Read(buffer, 0, length); //从当前位置开始读取指定长度的数据
-                                                            //Console.WriteLine(BitConverter.ToString(buffer));   //处理读取到的数据
-                                                            //Console.WriteLine(Encoding.UTF8.GetString(buffer));
 
-                                Console.Write("要保存的目录: ");
-                                string savepath = Console.ReadLine();
-                                if (savepath == "" || savepath == null || Object.Equals(savepath, null))
-                                {
-                                    Console.WriteLine(" ┗ 请输入文件夹路径！");
-                                }
-                                else
-                                {
-                                    ok1 = true;
-                                }
+                                string savepath = EnterSavePath(() => { }, () => { });               //  输入保存地址
                                 string rawsavepath = $"{savepath}/{fs.Name}";
-                                if (ok1)
+                                try
                                 {
+                                    FileStream fs1 = null;
                                     try
                                     {
-                                        bool ok2 = false;
-                                        FileStream fs1 = null;
-                                        try
-                                        {
-                                            fs1 = new FileStream(rawsavepath, FileMode.Create, FileAccess.Write);
-                                            fs1.Write(buffer, 0, buffer.Length);
-                                            File.SetAttributes(rawsavepath, File.GetAttributes(path));
-                                            Console.WriteLine(" ┗ 保存成功");
-                                            log.Info("[文件] [保存] " + path + " -> " + rawsavepath);
-                                        }
-                                        catch (UnauthorizedAccessException unauthExcep)
-                                        {
-                                            Console.WriteLine(" ┗ 无法访问该文件或文件夹");
-                                            log.Error("无法访问文件或文件夹 " + unauthExcep.Message);
-                                        }
-                                        finally { fs1.Close(); }
-
+                                        fs1 = new FileStream(rawsavepath, FileMode.Create, FileAccess.Write);
+                                        fs1.Write(buffer, 0, buffer.Length);
+                                        File.SetAttributes(rawsavepath, File.GetAttributes(path));
+                                        Console.WriteLine(" ┗ 保存成功");
+                                        log.Info("[文件] [保存] " + path + " -> " + rawsavepath);
                                     }
-                                    catch (Exception ex)
+                                    catch (UnauthorizedAccessException unauthExcep)
                                     {
-                                        Console.WriteLine(ex.Message);
-                                        log.Error(ex.Message);
+                                        Console.WriteLine(" ┗ 无法访问该文件或文件夹");
+                                        log.Error("无法访问文件或文件夹 " + unauthExcep.Message);
                                     }
+                                    finally { fs1.Close(); }
+
                                 }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine(ex.Message);
+                                    log.Error(ex.Message);
+                                }
+
                             }
                             catch (Exception ex)
                             {
@@ -439,7 +345,143 @@ namespace JackNTFS
             Console.ReadKey();
         }
 
-        static void PrintFileSystemInfo(FileSystemInfo fileSystemInfo, int level)
+
+        private static string EnterSavePath(Action? ifA, Action? elseA)
+        {
+            string savePath = "";
+            while (true)
+            {
+                Console.Write("要保存到的文件夹或盘符: ");
+                savePath = Console.ReadLine();
+
+                if (savePath == "" || savePath == null || Object.Equals(savePath, null))
+                {
+                    Console.WriteLine(" ┗ 请输入路径！");
+                    ifA();
+                }
+                else { elseA(); break; }
+            }
+            return savePath;
+        }
+        private static int EnterOffset()
+        {
+            Console.Write("请输入偏移量（单位：字节）[若无偏移则填写0<一般无偏移的文件均可以正常读取，无需使用本工具>]: ");
+            int offset = 0;
+            int resultI = IntInputOutOfRange(() =>
+            { offset = (int)Convert.ToDouble(Console.ReadLine()); }, () =>
+            { Console.Write("请输入偏移量（单位：字节）[若无偏移则填写0<一般无偏移的文件均可以正常读取，无需使用本工具>]: "); }, ref offset);
+            return offset;
+        }
+        private static void PrintDriveInfo()
+        {
+            DriveInfo[] allDrives = DriveInfo.GetDrives();
+            foreach (DriveInfo drive in allDrives)
+            {
+                try
+                {
+                    driveInfoList.Add(drive);
+                    Console.WriteLine("盘符 {0}", drive.Name);
+                    Console.WriteLine("  ┣ 卷标: {0}", drive.VolumeLabel);
+                    Console.WriteLine("  ┣ 文件系统: {0}", drive.DriveFormat);
+                    Console.WriteLine("  ┣ 当前用户的可用空间:{0, 15} 字节",
+                        drive.AvailableFreeSpace);
+
+                    if (drive.IsReady)
+                    {
+                        Console.WriteLine("  ┣ 总可用空间:        {0, 15} 字节",
+                            drive.TotalFreeSpace);
+
+                        Console.WriteLine("  ┗ 驱动器的总大小:    {0, 15} 字节",
+                            drive.TotalSize);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("尝试读取 {0} 时出现了错误: {1}", drive.Name, ex.Message);
+                }
+            }
+
+            Console.Write($"[共{driveInfoList.Count}个盘符] [");
+            log.Info($"[共{driveInfoList.Count}个盘符]");
+
+            int drive_int = 0;
+            foreach (DriveInfo drive in driveInfoList)
+            {
+                drive_int++;
+                Console.Write($" {drive_int}-{drive.Name} ");
+            }
+            Console.Write("]\n");
+        }
+        private static DriveInfo SelectDriveInfo()
+        {
+            Console.Write($"要读取的盘符 [请输入上方数字<1-{driveInfoList.Count}>]: ");
+            log.Info($"要读取的盘符 [请输入上方数字<1-{driveInfoList.Count}>]: ");
+            DriveInfo SelectedDrive = null;
+            while (true)
+            {
+                try
+                {
+                    int OperateDrive = Convert.ToInt16(Console.ReadLine());
+                    if (OperateDrive >= 1 && OperateDrive <= driveInfoList.Count)
+                    {
+                        SelectedDrive = driveInfoList[OperateDrive - 1];
+                        //log.Info()
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("超出范围(Out of range)");
+                        /*log.Warn("超出范围(Out of range): " + OperateDrive + $" [1, {driveInfoList.Count}]");*/
+                        log.Warn(OutOfRangeExpression(OperateDrive, 1, driveInfoList.Count, true, true));
+                        /*logMgr.log(AbstractLogger.Level.ERROR, "超出范围(Out of range)");*/
+                        Console.Write($"要读取的盘符[请输入上方数字<1-{driveInfoList.Count}>]: ");
+                        log.Info($"要读取的盘符[请输入上方数字<1-{driveInfoList.Count}>]: ");
+                    }
+                }
+                catch (IndexOutOfRangeException outOfRangeExcep)
+                {
+                    Console.WriteLine("超出范围(Out of range)");
+                    // Mark1
+                    Console.Write($"要读取的盘符[请输入上方数字<1-{driveInfoList.Count}>]: ");
+                }
+            }
+            Console.WriteLine($" ┗ 当前选择的盘符: {SelectedDrive.RootDirectory}");
+
+            return SelectedDrive;
+        }
+        private static int SelectActionTaken()
+        {
+            Console.Write($"要进行的操作 [ 1-全盘读取 2-单文件读取]: ");
+            int ActionTaken = 0;
+            while (true)
+            {
+                try
+                {
+                    int ActionDrive = Convert.ToInt16(Console.ReadLine());
+                    if (ActionDrive >= 1 && ActionDrive <= 2)
+                    {
+                        ActionTaken = ActionDrive;
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("超出范围(Out of range)");
+                        log.Warn("超出范围(Out of range)");
+                        log.Warn(OutOfRangeExpression(ActionDrive, 1, 2, true, true));
+                        Console.Write($"要进行的操作 [ 1-全盘读取 2-单文件读取]: ");
+                    }
+                }
+                catch (IndexOutOfRangeException outOfRangeExcep)
+                {
+                    Console.WriteLine("超出范围(Out of range)");
+                    /*logMgr.log(AbstractLogger.Level.ERROR, "超出范围(Out of range)");*/
+                    // Mark 2
+                    Console.Write($"要进行的操作 [ 1-全盘读取 2-单文件读取]: ");
+                }
+            }
+            return ActionTaken;
+        }
+        private static void PrintFileSystemInfo(FileSystemInfo fileSystemInfo, int level)
         {
             string prefix = new string('\t', level);
 
@@ -461,7 +503,9 @@ namespace JackNTFS
                 catch (UnauthorizedAccessException unauthExcep)
                 {
                     Console.WriteLine($"{fileSystemInfo.FullName} - 权限不足");
-                    log.Error($"{fileSystemInfo.FullName} - 权限不足"); // :)
+                    log.Error($"{fileSystemInfo.FullName} - 权限不足"); // :) 先留着，之后用 WilliamLogger 代替
+                    williamLogger.Log(new object[] { $"{fileSystemInfo.FullName} - 权限不足" });
+                    exceptionLogger.Log(new object[] { unauthExcep.Message });
                 }
             }
             else if (fileSystemInfo is FileInfo)
@@ -470,8 +514,25 @@ namespace JackNTFS
             }
 
         }
+        private static int IntInputOutOfRange(Action tryA, Action? catchA, ref int i)
+        {
+            while (true)
+            {
+                try
+                {
+                    tryA();
+                    break;
+                }
+                catch (Exception) // FIXME: OutOfRangeException
+                {
+                    Console.WriteLine("超出范围(Out of range)");
+                    catchA();
+                }
+            }
+            return i;
+        }
 
-        private static string outOfRangeExpression(long userInput, long left, long right, bool isLeftIncluded, bool isRightIncluded)
+        private static string OutOfRangeExpression(long userInput, long left, long right, bool isLeftIncluded, bool isRightIncluded)
         {
             string precontent = "超出范围(Out of range)";
             return (precontent + $" {userInput} "
