@@ -45,6 +45,7 @@ namespace JackNTFS.src.userinterface.exports
             public static readonly object[] FATAL        = { "FATAL",       60000        };
             public static readonly object[] DEBUG        = { "DEBUG",       70000        };
             public static readonly object[] ALL          = { "ALL",         int.MaxValue };
+            public static readonly object[] DEFAULT      = NONE;
 
             private WPriority() { }
 
@@ -104,6 +105,7 @@ namespace JackNTFS.src.userinterface.exports
             public static readonly string LOGGING   = "Logging";
             public static readonly string TESTING   = "Testing";
             public static readonly string EXCEPTION = "Exception";
+            public static readonly string DEAFULT   = NOTHING;
         }
 
         public WilliamLogger(object[] wPriority, string wPurpose)
@@ -164,20 +166,9 @@ namespace JackNTFS.src.userinterface.exports
 
         public void Log(object[] priority, string purpose, object[] msg)
         {
-            if (priority is null)
-            {
-                throw new ArgumentNullException(nameof(priority));
-            }
-
-            if (string.IsNullOrEmpty(purpose))
-            {
-                throw new ArgumentException($"“{nameof(purpose)}”不能为 null 或空。", nameof(purpose));
-            }
-
-            if (msg is null)
-            {
-                throw new ArgumentNullException(nameof(msg));
-            }
+            priority ??= DEFAULT;
+            purpose ??= DEAFULT;
+            msg ??= new object[0];
 
             using (this.mRedirections[0] = new StreamWriter(Console.OpenStandardOutput()))
             {
@@ -188,11 +179,7 @@ namespace JackNTFS.src.userinterface.exports
 
         public void Log(WilliamLogger logger, object[] msg)
         {
-            if (logger is null)
-            {
-                throw new ArgumentNullException(nameof(logger));
-            }
-
+            logger ??= GetGlobal();
             msg ??= new object[] { $"{nameof(msg)} should never be null." };
 
             using (this.mRedirections[0] = new StreamWriter(Console.OpenStandardOutput()))
@@ -426,7 +413,7 @@ namespace JackNTFS.src.userinterface.exports
         {
             if (WilliamPrecontent is null)
             {
-                throw new ArgumentNullException(nameof(WilliamPrecontent));
+                throw new ArgumentNullException($"{nameof(WilliamPrecontent)} should never be null.");
             }
 
             if (targetStr is null)

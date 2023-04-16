@@ -8,49 +8,50 @@ using static log4net.Core.Level;
 using static JackNTFS.src.userinterface.exports.WilliamLogger.WPriority;
 using static JackNTFS.src.userinterface.exports.WilliamLogger.WPurpose;
 
-namespace JackNTFS
+namespace JackNTFS.src
 {
     internal class Program
     {
         private Program() { }
 
-        private static List<FileSystemInfo> allFilesList = new List<FileSystemInfo>();  // 所有文件与文件夹
-        private static List<FileSystemInfo> allDirList = new List<FileSystemInfo>();    // 所有文件夹
-        private static List<FileSystemInfo> allFileList = new List<FileSystemInfo>();   // 所有文件
-        private static List<DriveInfo> driveInfoList = new List<DriveInfo>();           // 所有盘符信息
+        private static List<FileSystemInfo> allFilesList = new();                       // 所有文件与文件夹
+        private static List<FileSystemInfo> allDirList = new();                         // 所有文件夹
+        private static List<FileSystemInfo> allFileList = new();                        // 所有文件
+        private static List<DriveInfo> driveInfoList = new();                           // 所有盘符信息
         private static readonly ILog log = LogManager.GetLogger(typeof(Program));       // 声明Logger对象
         private static readonly WilliamLogger exceptionLogger = new(SERIOUS, EXCEPTION);
         private static readonly WilliamLogger testLogger      = new(DEBUG  , TESTING);
         private static readonly WilliamLogger williamLogger   = new(NORMAL , LOGGING);
 
-        //public static void Main(string[] args)
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
-            XmlConfigurator.Configure();
 
-/*            // TEST(William): WilliamLogger -> Abilities to redirect
-            string TARGET_TEST_FILE_FOR_REDIRECTING = "D:\\Projects\\JackNTFS\\JackNTFS_Test.txt";
-
-            if (!File.Exists(TARGET_TEST_FILE_FOR_REDIRECTING))
-            {
-                File.Create(TARGET_TEST_FILE_FOR_REDIRECTING);
-            }
-            *//* YOU LEFT HERE *//*
-            using (FileStream redirAbility = File.OpenWrite(TARGET_TEST_FILE_FOR_REDIRECTING))
+            // TEST(William): WilliamLogger -> Abilities to redirect
+            string TARGET_TEST_FILE_FOR_REDIRECTING = "C:\\JackNTFS.txt";
+            FileExistance(TARGET_TEST_FILE_FOR_REDIRECTING, true);
+/*            using (FileStream redirAbility = File.OpenWrite(TARGET_TEST_FILE_FOR_REDIRECTING))
             {
                 testLogger
                     .Log(new object[]
                          {
                              "Test text for multi-logging ability.\nThe second line.\nThe third line"
-                         }
-                         // FIXME: Create function Log without Execption but have multi-stream fore redirectings
-                         *//*new FileStream[]
+                         },
+                         // FIXME: Create function Log without Execption but have multi-stream for redirectings
+                         new FileStream[]
                          {
                              redirAbility
-                         }*//*);
-            }
+                         });
+            }*/
             // TESTOVER: WilliamLogger -> Abilities to redirect
-*/
+
+
+        }
+
+        //public static void Test(string[] args)
+        public static async Task Test(string[] args)
+        {
+            XmlConfigurator.Configure();
+
             Console.WriteLine("欢迎使用 JackNTFS 程序！\n[—————————————————————————————]");
             Console.WriteLine("按任意键以继续");
             Console.ReadLine();
@@ -539,6 +540,39 @@ namespace JackNTFS
                    + (isLeftIncluded ? "[" : "(")
                    + $"{left}, {right}"
                    + (isRightIncluded ? "]" : ")"));
+        }
+
+        private static void FileExistance(FileStream fstream, bool createIfNotExists)
+        {
+            FileExistance(fstream.Name, createIfNotExists);
+        }
+
+        private static void FileExistance(string fileAbsolutePath, bool createIfNotExists)
+        {
+            try
+            {
+                if (!File.Exists(fileAbsolutePath) && createIfNotExists)
+                {
+                    File.Create(fileAbsolutePath);
+                }
+            }
+            catch (System.IO.DirectoryNotFoundException dirNotFoundExcep)
+            {
+                exceptionLogger.Log(
+                    new object[] { $"{fileAbsolutePath} was invalid to be found. Please check the spelling." }
+                );
+            }
+            catch (System.IO.FileNotFoundException fileNotFoundExcep)
+            {
+                exceptionLogger.Log(
+                    new object[] { $"{fileNotFoundExcep.FileName} was invalid to be found. Please check the spelling." }
+                );
+            }
+            catch (System.UnauthorizedAccessException noPermExcep)
+            {
+                exceptionLogger.Log(
+                    new object[] { $"Access to {fileAbsolutePath} was denied due to improper permission." });
+            }
         }
     }
 }
